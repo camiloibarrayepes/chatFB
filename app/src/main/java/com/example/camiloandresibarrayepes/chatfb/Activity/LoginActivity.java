@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 /**
  * Created by Camilo Ibarra KAPTA on 26/02/2018.
@@ -52,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(LoginActivity.this, "Ingreso exitoso", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                        nextActivity();
 
                                     } else {
                                         Toast.makeText(LoginActivity.this, "Datos de acceso incorrectos", Toast.LENGTH_SHORT).show();
@@ -63,6 +64,13 @@ public class LoginActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(LoginActivity.this, "validaciones", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        btnRegistro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, RegistroActivity.class));
             }
         });
 
@@ -82,4 +90,22 @@ public class LoginActivity extends AppCompatActivity {
             }else return false;
 
     }
+
+    //Verifica si ya ha ingresado o iniciado sesion
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser!=null){
+            Toast.makeText(this,"Usuario Logeado", Toast.LENGTH_SHORT).show();
+            nextActivity();
+        }
+    }
+
+    private void nextActivity(){
+        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
+    }
+
 }
+

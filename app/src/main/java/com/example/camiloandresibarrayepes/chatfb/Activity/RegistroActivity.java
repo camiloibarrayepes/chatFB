@@ -61,10 +61,12 @@ public class RegistroActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if(task.isSuccessful()){
                                         Toast.makeText(RegistroActivity.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                                        //Guardar datos de ingreso en tabla de Firebase llamada Usuarios
                                         Usuario usuario = new Usuario();
                                         usuario.setCorreo(correo);
                                         usuario.setNombre(nombre);
                                         referenceUsuarios.push().setValue(usuario);
+                                        finish();
                                     }else{
                                         Toast.makeText(RegistroActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();
                                     }

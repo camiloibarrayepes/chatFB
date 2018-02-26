@@ -18,6 +18,7 @@ import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeEnviar;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeRecibir;
 import com.example.camiloandresibarrayepes.chatfb.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText txtMensaje;
     private Button btnEnviar;
     private ImageButton btnEnviarFoto;
+    private Button logout;
 
     private AdapterMensajes adapter;
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         txtMensaje = (EditText)findViewById(R.id.txtMensaje);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
         btnEnviarFoto = (ImageButton)findViewById(R.id.btnEnviarFoto);
+        logout = (Button)findViewById(R.id.logout);
         //inicia sin foto de perfil
         fotoPerfilCadena = "";
 
@@ -83,6 +86,14 @@ public class MainActivity extends AppCompatActivity {
                 databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), nombre.getText().toString(), fotoPerfilCadena, "1", ServerValue.TIMESTAMP));
                 //adapter.addMensaje(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 txtMensaje.setText("");
+            }
+        });
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
 
