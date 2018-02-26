@@ -1,5 +1,7 @@
 package com.example.camiloandresibarrayepes.chatfb;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,13 +10,18 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,12 +32,16 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvMensajes;
     private EditText txtMensaje;
     private Button btnEnviar;
+    private ImageButton btnEnviarFoto;
 
     private AdapterMensajes adapter;
 
     //Envio datos a FIREBASE
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
+    private static final int  PHOTO_SEND = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +53,13 @@ public class MainActivity extends AppCompatActivity {
         rvMensajes = (RecyclerView)findViewById(R.id.rvMensajes);
         txtMensaje = (EditText)findViewById(R.id.txtMensaje);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
+        btnEnviarFoto = (ImageButton)findViewById(R.id.btnEnviarFoto);
+
 
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("chat");//Sala de chat (nombre donde se guardan mensajes)
+        storage = FirebaseStorage.getInstance();
+
 
         adapter = new AdapterMensajes(this);
         LinearLayoutManager l = new LinearLayoutManager(this);
@@ -58,6 +73,16 @@ public class MainActivity extends AppCompatActivity {
                 databaseReference.push().setValue(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 //adapter.addMensaje(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 txtMensaje.setText("");
+            }
+        });
+
+        btnEnviarFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/jpg");
+                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(i, "Selecciona una foto"), PHOTO_SEND);
             }
         });
 
@@ -105,5 +130,25 @@ public class MainActivity extends AppCompatActivity {
     //permite que los mensajes de desplacen hacia arriba a medida que aparecen
     private void setScrollBar(){
         rvMensajes.scrollToPosition(adapter.getItemCount()-1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==PHOTO_SEND && resultCode == RESULT_OK)
+        {
+            Uri u = data.getData();
+            storageReference = storage.getReference("imagenes_chat");//Imagenes de chat
+            //se obtiene un KEY de las fotos para diferenciarlas
+            final StorageReference fotoReferencia = storageReference.child(u.getLastPathSegment());
+            fotoReferencia.putFile(u).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri u = taskSnapshot.getDownloadUrl();
+                    Mensaje m = new Mensaje("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), "", "2", "00:00");
+                    databaseReference.push().setValue(m);
+                }
+            });
+        }
     }
 }
