@@ -1,4 +1,4 @@
-package com.example.camiloandresibarrayepes.chatfb;
+package com.example.camiloandresibarrayepes.chatfb.Entidades;
 
 /**
  * Created by camiloandresibarrayepes on 25/02/18.

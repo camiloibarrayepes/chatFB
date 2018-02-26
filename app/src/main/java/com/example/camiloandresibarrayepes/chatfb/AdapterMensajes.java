@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeRecibir;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

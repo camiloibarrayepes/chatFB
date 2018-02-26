@@ -1,4 +1,6 @@
-package com.example.camiloandresibarrayepes.chatfb;
+package com.example.camiloandresibarrayepes.chatfb.Entidades;
+
+import com.example.camiloandresibarrayepes.chatfb.Entidades.Mensaje;
 
 /**
  * Created by Camilo Ibarra KAPTA on 26/02/2018.
