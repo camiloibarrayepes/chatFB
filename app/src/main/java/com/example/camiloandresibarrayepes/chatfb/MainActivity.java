@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private static final int  PHOTO_SEND = 1;
+    private static final int PHOTO_PERFIL = 2;
+    private String fotoPerfilCadena;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         txtMensaje = (EditText)findViewById(R.id.txtMensaje);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
         btnEnviarFoto = (ImageButton)findViewById(R.id.btnEnviarFoto);
+        //inicia sin foto de perfil
+        fotoPerfilCadena = "";
 
 
         database = FirebaseDatabase.getInstance();
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Insertar mensaje enla base de datos
-                databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", ServerValue.TIMESTAMP));
+                databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), nombre.getText().toString(), fotoPerfilCadena, "1", ServerValue.TIMESTAMP));
                 //adapter.addMensaje(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 txtMensaje.setText("");
             }
@@ -84,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
                 i.setType("image/jpg");
                 i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                 startActivityForResult(Intent.createChooser(i, "Selecciona una foto"), PHOTO_SEND);
+            }
+        });
+
+        fotoPerfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/jpg");
+                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(i, "Selecciona una foto"), PHOTO_PERFIL);
             }
         });
 
@@ -146,8 +162,26 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri u = taskSnapshot.getDownloadUrl();
-                    MensajeEnviar m = new MensajeEnviar("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), "", "2", ServerValue.TIMESTAMP);
+                    MensajeEnviar m = new MensajeEnviar("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
                     databaseReference.push().setValue(m);
+                }
+            });
+        }else if(requestCode == PHOTO_PERFIL && resultCode == RESULT_OK)
+        {
+            Uri u = data.getData();
+            storageReference = storage.getReference("foto_perfil");//Imagenes de chat
+            //se obtiene un KEY de las fotos para diferenciarlas
+            final StorageReference fotoReferencia = storageReference.child(u.getLastPathSegment());
+            fotoReferencia.putFile(u).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri u = taskSnapshot.getDownloadUrl();
+                    fotoPerfilCadena = u.toString();
+                    MensajeEnviar m = new MensajeEnviar("Camilo ha actualizado su foto", u.toString(),nombre.getText().toString(), fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
+                    databaseReference.push().setValue(m);
+                    //Actualizar foto perfil (arriba derecha)
+                    Glide.with(MainActivity.this).load(u.toString()).into(fotoPerfil);
+
                 }
             });
         }
