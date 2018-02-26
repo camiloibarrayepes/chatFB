@@ -19,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Insertar mensaje enla base de datos
-                databaseReference.push().setValue(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
+                databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", ServerValue.TIMESTAMP));
                 //adapter.addMensaje(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 txtMensaje.setText("");
             }
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
             //Cuando se agrege un dato a la base de datos, lo agrega a la vista
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Mensaje m = dataSnapshot.getValue(Mensaje.class);
+                MensajeRecibir m = dataSnapshot.getValue(MensajeRecibir.class);
                 adapter.addMensaje(m);
 
             }
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri u = taskSnapshot.getDownloadUrl();
-                    Mensaje m = new Mensaje("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), "", "2", "00:00");
+                    MensajeEnviar m = new MensajeEnviar("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), "", "2", ServerValue.TIMESTAMP);
                     databaseReference.push().setValue(m);
                 }
             });

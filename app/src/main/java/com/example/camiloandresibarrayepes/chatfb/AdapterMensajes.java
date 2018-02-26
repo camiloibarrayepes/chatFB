@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,14 +19,14 @@ import java.util.List;
 
 public class AdapterMensajes extends RecyclerView.Adapter<HolderMensaje> {
 
-    private List<Mensaje> listMensaje = new ArrayList<>();
+    private List<MensajeRecibir> listMensaje = new ArrayList<>();
     private Context c;
 
     public AdapterMensajes(Context c) {
         this.c = c;
     }
 
-    public void addMensaje(Mensaje m){
+    public void addMensaje(MensajeRecibir m){
         listMensaje.add(m);
         notifyItemInserted(listMensaje.size());
     }
@@ -40,7 +42,7 @@ public class AdapterMensajes extends RecyclerView.Adapter<HolderMensaje> {
     public void onBindViewHolder(HolderMensaje holder, int position) {
         holder.getNombre().setText(listMensaje.get(position).getNombre());
         holder.getMensaje().setText(listMensaje.get(position).getMensaje());
-        holder.getHora().setText(listMensaje.get(position).getHora());
+
         //Para mostrar imagen
         if(listMensaje.get(position).getType_mensaje().equals("2")){
             //Si es igual a 2 es porque acaban de enviar un mensaje
@@ -51,6 +53,11 @@ public class AdapterMensajes extends RecyclerView.Adapter<HolderMensaje> {
             holder.getFotoMensaje().setVisibility(View.GONE);
             holder.getMensaje().setVisibility(View.VISIBLE);
         }
+
+        Long codigoHora = listMensaje.get(position).getHora();
+        Date d = new Date(codigoHora);
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss a"); //a es para am o pm
+        holder.getHora().setText(sdf.format(d));
 
     }
 
