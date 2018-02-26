@@ -50,10 +50,18 @@
 
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/mensajeMensaje"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hola Biencenido"
+                android:text="Hola Bienvenido"
+                />
+            <ImageView
+                android:id="@+id/mensajeFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+
                 />
             
         </LinearLayout>

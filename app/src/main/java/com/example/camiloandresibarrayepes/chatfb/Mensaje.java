@@ -71,4 +71,12 @@ public class Mensaje {
     public void setHora(String hora) {
         this.hora = hora;
     }
+
+    public String getUrlFoto() {
+        return urlFoto;
+    }
+
+    public void setUrlFoto(String urlFoto) {
+        this.urlFoto = urlFoto;
+    }
 }
