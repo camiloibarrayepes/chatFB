@@ -5,48 +5,75 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="20sp">
+    android:padding="20sp"
+    android:background="@drawable/belt3">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome"
+            android:textSize="50sp"
+            android:textColor="#fff"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please Sign in"
+            android:textSize="30sp"
+            android:textColor="#fff"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <EditText
+            android:id="@+id/correoLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo"
+            android:textColor="#FFF"
+            android:inputType="textEmailAddress"/>
+
+        <EditText
+            android:id="@+id/contraseñaLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword"/>
+
     </LinearLayout>
 
 
-    <EditText
-        android:id="@+id/correoLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Correo"
-        android:inputType="textEmailAddress"/>
-
-    <EditText
-        android:id="@+id/contraseñaLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"/>
-
-
-    <Button
-        android:id="@+id/loginLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Login"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|bottom"
+        android:gravity="center|top"
         android:layout_weight="1"
+        android:padding="20sp"
         >
 
-    <Button
-        android:id="@+id/RegistroLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Registrar"/>
+        <Button
+            android:id="@+id/loginLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Login"/>
+
+        <Button
+            android:id="@+id/RegistroLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Registrar" />
+
+
 
     </LinearLayout>
 </LinearLayout>

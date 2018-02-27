@@ -5,34 +5,69 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="20sp">
+    android:padding="20sp"
+    android:background="@drawable/belt3"
+    >
 
-    <EditText
-        android:id="@+id/RegistroNombre"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"/>
+        android:layout_weight="2"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/RegistroCorreo"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create your Account"
+            android:textColor="#fff"
+            android:textSize="50sp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fill the form"
+            android:textColor="#fff"
+            android:textSize="20sp"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Correo"
-        android:inputType="textEmailAddress"/>
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/RegistroContraseña"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"/>
+        <EditText
+            android:id="@+id/RegistroNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"/>
 
-    <EditText
-        android:id="@+id/RegistroContraseñaRepetida"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Repite tu contraseña"
-        android:inputType="textPassword"/>
+        <EditText
+            android:id="@+id/RegistroCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo"
+            android:inputType="textEmailAddress"/>
+
+        <EditText
+            android:id="@+id/RegistroContraseña"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword"/>
+
+        <EditText
+            android:id="@+id/RegistroContraseñaRepetida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Repite tu contraseña"
+            android:inputType="textPassword"/>
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/RegistroRegistrar"
         android:layout_width="wrap_content"
