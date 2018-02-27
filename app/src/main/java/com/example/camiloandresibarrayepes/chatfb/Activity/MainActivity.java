@@ -1,7 +1,10 @@
 package com.example.camiloandresibarrayepes.chatfb.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import com.example.camiloandresibarrayepes.chatfb.AdapterMensajes;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeEnviar;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeRecibir;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.Usuario;
+import com.example.camiloandresibarrayepes.chatfb.Manifest;
 import com.example.camiloandresibarrayepes.chatfb.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,7 +59,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int  PHOTO_SEND = 1;
     private static final int PHOTO_PERFIL = 2;
     private String fotoPerfilCadena;
+
     private FirebaseAuth mAuth;
+    private String NOMBRE_USUARIO;
+
 
 
     @Override
@@ -72,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         logout = (Button)findViewById(R.id.logout);
         //inicia sin foto de perfil
         fotoPerfilCadena = "";
+        nombre.setText(NOMBRE_USUARIO);
 
 
         database = FirebaseDatabase.getInstance();
@@ -89,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Insertar mensaje enla base de datos
-                databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), nombre.getText().toString(), fotoPerfilCadena, "1", ServerValue.TIMESTAMP));
+                databaseReference.push().setValue(new MensajeEnviar(txtMensaje.getText().toString(), NOMBRE_USUARIO, fotoPerfilCadena, "1", ServerValue.TIMESTAMP));
                 //adapter.addMensaje(new Mensaje(txtMensaje.getText().toString(), nombre.getText().toString(), "", "1", "00:00" ));
                 txtMensaje.setText("");
             }
@@ -162,12 +170,36 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        //verifyStoragePermissions(this);
     }
 
     //permite que los mensajes de desplacen hacia arriba a medida que aparecen
     private void setScrollBar(){
         rvMensajes.scrollToPosition(adapter.getItemCount()-1);
     }
+
+    //PERMISOS VERIFICACION
+    /*
+    public static boolean verifyStoragePermissions(Activity activity) {
+        String[] PERMISSIONS_STORAGE = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        int REQUEST_EXTERNAL_STORAGE = 1;
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+            return false;
+        }else{
+            return true;
+        }
+    }
+    */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -182,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri u = taskSnapshot.getDownloadUrl();
-                    MensajeEnviar m = new MensajeEnviar("Camilo te ha enviado una foto", u.toString(),nombre.getText().toString(), fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
+                    MensajeEnviar m = new MensajeEnviar(NOMBRE_USUARIO + " te ha enviado una foto", u.toString(),NOMBRE_USUARIO, fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
                     databaseReference.push().setValue(m);
                 }
             });
@@ -197,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Uri u = taskSnapshot.getDownloadUrl();
                     fotoPerfilCadena = u.toString();
-                    MensajeEnviar m = new MensajeEnviar("Camilo ha actualizado su foto", u.toString(),nombre.getText().toString(), fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
+                    MensajeEnviar m = new MensajeEnviar( NOMBRE_USUARIO + " ha actualizado su foto", u.toString(),NOMBRE_USUARIO, fotoPerfilCadena, "2", ServerValue.TIMESTAMP);
                     databaseReference.push().setValue(m);
                     //Actualizar foto perfil (arriba derecha)
                     Glide.with(MainActivity.this).load(u.toString()).into(fotoPerfil);
@@ -212,6 +244,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser!=null){
+            //Inhabilitar boton enviar antes de autenticar
+            btnEnviar.setEnabled(false);
             //Se captura el ID del usuario
             DatabaseReference reference = database.getReference("Usuarios/"+currentUser.getUid());
             //Se puede entonces, llamar el nombre
@@ -219,7 +253,11 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Usuario usuario = dataSnapshot.getValue(Usuario.class);
-                    Toast.makeText(MainActivity.this, "Bienvenido " +usuario.getNombre(), Toast.LENGTH_SHORT).show();
+                    NOMBRE_USUARIO = usuario.getNombre();
+                    nombre.setText(NOMBRE_USUARIO);
+                    //Cuando ya tiene los datos se habilita
+                    btnEnviar.setEnabled(true);
+                    //Toast.makeText(MainActivity.this, "Bienvenido " +usuario.getNombre(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
