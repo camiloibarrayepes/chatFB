@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -29,7 +30,6 @@ public class RegistroActivity extends AppCompatActivity {
     private Button btnRegistrar;
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
-    private DatabaseReference referenceUsuarios;
 
 
     @Override
@@ -46,7 +46,6 @@ public class RegistroActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();//Usuarios siempre con mayusculas
 
-        referenceUsuarios = database.getReference("Usuarios");
 
         btnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +64,10 @@ public class RegistroActivity extends AppCompatActivity {
                                         Usuario usuario = new Usuario();
                                         usuario.setCorreo(correo);
                                         usuario.setNombre(nombre);
-                                        referenceUsuarios.push().setValue(usuario);
+                                        //Modificacion para guardar ID de usuario
+                                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                                        DatabaseReference reference = database.getReference("Usuarios/"+currentUser.getUid());
+                                        reference.setValue(usuario);
                                         finish();
                                     }else{
                                         Toast.makeText(RegistroActivity.this, "Error al registrar", Toast.LENGTH_SHORT).show();

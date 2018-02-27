@@ -11,20 +11,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.camiloandresibarrayepes.chatfb.AdapterMensajes;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeEnviar;
 import com.example.camiloandresibarrayepes.chatfb.Entidades.MensajeRecibir;
+import com.example.camiloandresibarrayepes.chatfb.Entidades.Usuario;
 import com.example.camiloandresibarrayepes.chatfb.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int  PHOTO_SEND = 1;
     private static final int PHOTO_PERFIL = 2;
     private String fotoPerfilCadena;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -70,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("chat");//Sala de chat (nombre donde se guardan mensajes)
+        databaseReference = database.getReference("chatV2");//Sala de chat (nombre donde se guardan mensajes)
         storage = FirebaseStorage.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
 
         adapter = new AdapterMensajes(this);
@@ -93,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                returnLogin();
             }
         });
 
@@ -200,4 +206,36 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser!=null){
+            //Se captura el ID del usuario
+            DatabaseReference reference = database.getReference("Usuarios/"+currentUser.getUid());
+            //Se puede entonces, llamar el nombre
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Usuario usuario = dataSnapshot.getValue(Usuario.class);
+                    Toast.makeText(MainActivity.this, "Bienvenido " +usuario.getNombre(), Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }else{
+            returnLogin();
+        }
+    }
+
+    private void returnLogin(){
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
+    }
+
+
 }
